@@ -258,11 +258,15 @@ namespace SDT
 		inline static auto Present_Flags_Inject            = IAL::Addr(AID::Present, 77246, Offsets::Present_Flags_Inject, 0x8E);
 		inline static auto presentAddr                     = IAL::Addr(AID::Present, 77246, Offsets::Present, 0x9F);
 
-		inline static auto bFullscreen_Patch  = IAL::Addr(AID::Init0, 36547, Offsets::bFullscreen_Patch, IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xCEF : 0xCCF : 0xCB0);
-		inline static auto bBorderless_Patch  = IAL::Addr(AID::Init0, 36547, Offsets::bBorderless_Patch, IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xCFA : 0xCDA : 0xCBB);
-		inline static auto iSizeW_Patch       = IAL::Addr(AID::Init0, 36547, Offsets::iSizeW_Patch, IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xD05 : 0xCE5 : 0xCC6);
-		inline static auto iSizeH_Patch       = IAL::Addr(AID::Init0, 36547, Offsets::iSizeH_Patch, IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xD0F : 0xCEF : 0xCD0);
-		inline static auto DisplayRefreshRate = IAL::Addr(AID::Init0, 36547, Offsets::DisplayRefreshRate, IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xD2D : 0xD0D : 0xCEE);
+		// 1.7.99 deltas: the whole settings block moved to +0xBDF..+0xC21 with
+		// the 1.6.629 relative spacing intact (+0xB/+0x16/+0x20/+0x3E); reads
+		// verified against the "bFull Screen/bBorderless/iSize W/iSize H
+		// :Display" Setting value globals, refresh = mov [rsp+0x70], 60
+		inline static auto bFullscreen_Patch  = IAL::Addr(AID::Init0, 36547, Offsets::bFullscreen_Patch, IAL::ver() >= VER_1_7_99 ? 0xBDF : IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xCEF : 0xCCF : 0xCB0);
+		inline static auto bBorderless_Patch  = IAL::Addr(AID::Init0, 36547, Offsets::bBorderless_Patch, IAL::ver() >= VER_1_7_99 ? 0xBEA : IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xCFA : 0xCDA : 0xCBB);
+		inline static auto iSizeW_Patch       = IAL::Addr(AID::Init0, 36547, Offsets::iSizeW_Patch, IAL::ver() >= VER_1_7_99 ? 0xBF5 : IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xD05 : 0xCE5 : 0xCC6);
+		inline static auto iSizeH_Patch       = IAL::Addr(AID::Init0, 36547, Offsets::iSizeH_Patch, IAL::ver() >= VER_1_7_99 ? 0xBFF : IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xD0F : 0xCEF : 0xCD0);
+		inline static auto DisplayRefreshRate = IAL::Addr(AID::Init0, 36547, Offsets::DisplayRefreshRate, IAL::ver() >= VER_1_7_99 ? 0xC1D : IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xD2D : 0xD0D : 0xCEE);
 
 		//inline static auto DXGIData = IAL::Addr<Structures::IDXGIData**>(AID::DXGIData);
 

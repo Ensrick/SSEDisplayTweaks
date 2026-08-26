@@ -174,8 +174,13 @@ namespace SDT
 
 		PopulateUIStringHolder_t PopulateUIStringHolder_O;
 
-		inline static const auto LoadPluginINI_C          = IAL::Addr(AID::Init0, 36547, Offsets::LoadPluginINI_C, IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xAB1 : 0xA91 : 0xA71);
-		inline static const auto PopulateUIStringHolder_C = IAL::Addr(AID::Init0, 36547, Offsets::PopulateUIStringHolder_C, IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xEC4 : 0xEA4 : 0xE85);
+		// 1.7.99 deltas: LoadPluginINI_C = the second of the two rcx=[rip+g]
+		// calls to the plugin-ini loader (callee references "data\"), so the
+		// config-load event fires after BOTH collections are read;
+		// PopulateUIStringHolder_C = the call whose result is stored into the
+		// UIStringHolder singleton (id 400446) two instructions later
+		inline static const auto LoadPluginINI_C          = IAL::Addr(AID::Init0, 36547, Offsets::LoadPluginINI_C, IAL::ver() >= VER_1_7_99 ? 0xB06 : IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xAB1 : 0xA91 : 0xA71);
+		inline static const auto PopulateUIStringHolder_C = IAL::Addr(AID::Init0, 36547, Offsets::PopulateUIStringHolder_C, IAL::ver() >= VER_1_7_99 ? 0xDBE : IAL::ver() >= VER_1_6_342 ? IAL::ver() >= VER_1_6_629 ? 0xEC4 : 0xEA4 : 0xE85);
 
 		mstcMap_t m_mstc_map;
 

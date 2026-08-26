@@ -79,8 +79,10 @@ namespace SDT
 		decltype(&AddMapCameraPos_Hook) addCameraPos_o;
 
 		inline static auto MT_Inject                                     = IAL::Addr(AID::UnkMovFunc0, 0, Offsets::MT_Inject, 0);
-		inline static auto MT_Inject_AE1                                 = IAL::Addr(0, 41996, 0, 0x389);
-		inline static auto MT_Inject_AE2                                 = IAL::Addr(0, 41996, 0, 0x880);
+		// 1.7.99: the two comiss xmm6, [rip+threshold] sites moved to
+		// +0x398/+0x8A1 (both read the same Setting value, id 470023)
+		inline static auto MT_Inject_AE1                                 = IAL::Addr(0, 41996, 0, IAL::ver() >= VER_1_7_99 ? 0x398 : 0x389);
+		inline static auto MT_Inject_AE2                                 = IAL::Addr(0, 41996, 0, IAL::ver() >= VER_1_7_99 ? 0x8A1 : 0x880);
 		inline static auto FPSittingRotationSpeed                        = IAL::Addr<float*>(AID::UnkFloat0, 382476);
 		inline static auto FMHS_Inject                                   = IAL::Addr(AID::UnkMM0, 50724, Offsets::FMHS_Inject, 0x125);
 		inline static auto MapLookHandler_ProcessButton                  = IAL::Addr<std::uintptr_t>(AID::MapLookHandler_ProcessButton, 53062);

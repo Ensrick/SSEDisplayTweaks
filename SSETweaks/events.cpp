@@ -50,6 +50,9 @@ namespace SDT
 
 	bool IEvents::Initialize()
 	{
+		// hook failures degrade instead of refusing the whole plugin: without
+		// this hook the OnConfigLoad / OnGameConfigLoaded events never fire,
+		// so INI-driven refresh is lost, but every other subsystem still works
 		if (IAL::IsAE())
 		{
 			if (!hook::call5(
@@ -58,8 +61,7 @@ namespace SDT
 					reinterpret_cast<std::uintptr_t>(PostLoadPluginINI_AE_Hook),
 					m_Instance.LoadPluginINI_AE_O))
 			{
-				m_Instance.FatalError("Could not install event hooks");
-				return false;
+				m_Instance.Error("Could not install the LoadPluginINI hook, config-load events disabled");
 			}
 		}
 		else
@@ -70,8 +72,7 @@ namespace SDT
 					reinterpret_cast<std::uintptr_t>(PostLoadPluginINI_Hook),
 					m_Instance.LoadPluginINI_O))
 			{
-				m_Instance.FatalError("Could not install event hooks");
-				return false;
+				m_Instance.Error("Could not install the LoadPluginINI hook, config-load events disabled");
 			}
 		}
 

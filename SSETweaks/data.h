@@ -7,6 +7,7 @@ namespace SDT
 	static inline constexpr std::uint64_t VER_1_6_342 = 0x0001000601560000;
 	static inline constexpr std::uint64_t VER_1_6_629 = 0x0001000602750000;
 	static inline constexpr std::uint64_t VER_1_6_659 = 0x0001000602930000;
+	static inline constexpr std::uint64_t VER_1_7_99  = 0x0001000700630000;
 
 	namespace AID
 	{

@@ -112,6 +112,14 @@ namespace SDT
 
 		if (m_conf.dialogue_look_se)
 		{
+			if (IAL::ver() >= VER_1_7_99)
+			{
+				// 1.7.99 restructured PlayerControls::InputEvent::ProcessEvent;
+				// the +0x58C edge-smoothing block no longer exists at a
+				// portable location
+				Warning("%s: not ported to runtime 1.7.99+, patch skipped", CKEY_PC_DIALOGUE_LOOK_SE);
+			}
+			else
 			Patch_DialogueLook_Edge();
 		}
 
@@ -257,7 +265,10 @@ namespace SDT
 
 			LogPatchBegin(CKEY_FSHS);
 			{
-				FirstPersonSitHorizontal code(FMHS_Inject + 0x1E, std::uintptr_t(MouseSens_AE_Hook));
+				// 1.7.99: the replaced add-path block still starts at +0x125
+				// but the convergence point moved: resume at +0x33 (+0x158
+				// in-function), not +0x1E
+				FirstPersonSitHorizontal code(FMHS_Inject + (IAL::ver() >= VER_1_7_99 ? 0x33 : 0x1E), std::uintptr_t(MouseSens_AE_Hook));
 				ISKSE::GetBranchTrampoline().Write6Branch(FMHS_Inject, code.get());
 			}
 			LogPatchEnd(CKEY_FSHS);
@@ -362,7 +373,8 @@ namespace SDT
 
 		LogPatchBegin(CKEY_AUTO_VANITY_CAMERA);
 		{
-			auto                  addr(AutoVanityState_Update + (IAL::IsAE() ? OffsetsAE::AutoVanityState_Update_IncrementAngle : Offsets::AutoVanityState_Update_IncrementAngle));
+			// 1.7.99: the displaced subss xmm0, [rip+increment] moved to +0xED
+			auto                  addr(AutoVanityState_Update + (IAL::ver() >= VER_1_7_99 ? 0xED : IAL::IsAE() ? OffsetsAE::AutoVanityState_Update_IncrementAngle : Offsets::AutoVanityState_Update_IncrementAngle));
 			AutoVanityStateUpdate code(addr, std::uintptr_t(std::addressof(m_gv.fAutoVanityIncrement)));
 			ISKSE::GetBranchTrampoline().Write6Branch(addr, code.get());
 		}
@@ -407,9 +419,13 @@ namespace SDT
 
 		LogPatchBegin(CKEY_PC_DIALOGUE_LOOK);
 		{
+			// 1.7.99: the displaced movss xmm1, [rip+fPCDialogueLookSpeed
+			// value] moved to +0x41E (function was restructured/shortened)
 			auto addr(
 				PlayerControls_InputEvent_ProcessEvent +
-				(IAL::IsAE() ?
+				(IAL::ver() >= VER_1_7_99 ?
+			         0x41E :
+			     IAL::IsAE() ?
 			         OffsetsAE::PlayerControls_InputEvent_ProcessEvent_LoadDLSpeed :
                      Offsets::PlayerControls_InputEvent_ProcessEvent_LoadDLSpeed));
 
@@ -755,21 +771,30 @@ namespace SDT
 			}
 			LogPatchEnd("VerticalLookSensitivity (ThirdPerson)");
 
-			LogPatchBegin("VerticalLookSensitivity (Dragon)");
+			if (IAL::ver() >= VER_1_7_99)
 			{
-				auto     addr(VerticalLookSens_Dragon + 0x53);
-				Assembly code(addr);
-				ISKSE::GetBranchTrampoline().Write6Branch(addr, code.get());
+				// 1.7.99 moved the dragon/horse sensitivity multiply into a
+				// shared helper; the +0x53 inline mulss sites no longer exist
+				Warning("VerticalLookSensitivity: dragon/horse variants not ported to runtime 1.7.99+, skipped (third person still applies)");
 			}
-			LogPatchEnd("VerticalLookSensitivity (Dragon)");
+			else
+			{
+				LogPatchBegin("VerticalLookSensitivity (Dragon)");
+				{
+					auto     addr(VerticalLookSens_Dragon + 0x53);
+					Assembly code(addr);
+					ISKSE::GetBranchTrampoline().Write6Branch(addr, code.get());
+				}
+				LogPatchEnd("VerticalLookSensitivity (Dragon)");
 
-			LogPatchBegin("VerticalLookSensitivity (Horse)");
-			{
-				auto     addr(VerticalLookSens_Horse + 0x53);
-				Assembly code(addr);
-				ISKSE::GetBranchTrampoline().Write6Branch(addr, code.get());
+				LogPatchBegin("VerticalLookSensitivity (Horse)");
+				{
+					auto     addr(VerticalLookSens_Horse + 0x53);
+					Assembly code(addr);
+					ISKSE::GetBranchTrampoline().Write6Branch(addr, code.get());
+				}
+				LogPatchEnd("VerticalLookSensitivity (Horse)");
 			}
-			LogPatchEnd("VerticalLookSensitivity (Horse)");
 		}
 		/*else
 		{

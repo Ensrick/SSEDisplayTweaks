@@ -167,7 +167,9 @@ namespace SDT
 		MsgProc m_mp;
 
 		inline static std::uintptr_t CreateWindowEx_C = IAL::Addr(AID::WindowCreate, 77226, Offsets::WindowCreate, 0x22C);
-		inline static std::uintptr_t GetClientRect1_C = IAL::Addr(AID::WinFunc0, 77245, Offsets::GetClientRect1, 0x18B);
+		// 1.7.99: the function has two USER32!GetClientRect thunk calls
+		// (+0x40, +0x1DC); +0x1DC is the positional match for the old +0x18B
+		inline static std::uintptr_t GetClientRect1_C = IAL::Addr(AID::WinFunc0, 77245, Offsets::GetClientRect1, IAL::ver() >= VER_1_7_99 ? 0x1DC : 0x18B);
 
 		struct
 		{

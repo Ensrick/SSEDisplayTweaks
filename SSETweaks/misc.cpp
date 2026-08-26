@@ -117,7 +117,13 @@ namespace SDT
 			}
 		}
 
-		if (m_conf.loadscreen_filter)
+		if (m_conf.loadscreen_filter && IAL::ver() >= VER_1_7_99)
+		{
+			// 1.7.99 restructured TESLoadScreen form loading (different
+			// registers and call sequence at the +0x36 inject site)
+			Warning("%s: not ported to runtime 1.7.99+, patch skipped", CKEY_LSF);
+		}
+		else if (m_conf.loadscreen_filter)
 		{
 			m_Instance.m_pluginData = std::make_unique<IPluginInfo>();
 
@@ -169,7 +175,13 @@ namespace SDT
 
 		if (m_conf.disable_actor_fade)
 		{
-			if (IAL::IsAE())
+			if (IAL::ver() >= VER_1_7_99)
+			{
+				// 1.7.99 reshuffled the fade branch block; the +0x4BA/+0x4CA
+				// instruction-rewrite sites no longer line up
+				Warning("DisableActorFade: not ported to runtime 1.7.99+, patch skipped");
+			}
+			else if (IAL::IsAE())
 			{
 				constexpr std::uint8_t data1[] = { 0xEB, 0x61, 0x90, 0x90, 0x90, 0x90, 0x90 };
 				safe_write(ActorFade_a + 0x4CA, data1, sizeof(data1));
