@@ -182,7 +182,8 @@ extern "C" {
 		PLUGIN_NAME,
 		PLUGIN_AUTHOR,
 		"n/a",
-		SKSEPluginVersionData::kVersionIndependentEx_NoStructUse,
+		SKSEPluginVersionData::kVersionIndependentEx_NoStructUse |
+			SKSEPluginVersionData::kVersionIndependentEx_AddressLibraryV5,
 		SKSEPluginVersionData::kVersionIndependent_AddressLibraryPostAE,
 		{ RUNTIME_VERSION_1_6_318, RUNTIME_VERSION_1_6_323, 0 },
 		0,

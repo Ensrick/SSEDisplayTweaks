@@ -10,7 +10,9 @@ namespace SDT
 
 	const char* ISKSE::GetLogPath(std::uint32_t a_version) const
 	{
-		return a_version >= RUNTIME_VERSION_1_6_659 ?
+		// GOG runtimes carry RUNTIME_TYPE_GOG in the sub-version nibble; a plain
+		// ordering test wrongly matches Steam 1.6.1130+ / 1.7.99
+		return GET_EXE_VERSION_SUB(a_version) == RUNTIME_TYPE_GOG ?
 		           PLUGIN_LOG_PATH_GOG :
                    PLUGIN_LOG_PATH;
 	}
